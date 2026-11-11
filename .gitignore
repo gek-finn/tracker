@@ -1,0 +1,33 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Локальные базы данных и резервные копии (реальные данные — не публиковать) ---
+tasks.db
+tasks.db-journal
+tasks.db-wal
+tasks.db-shm
+*.sqlite
+*.sqlite3
+backups/
+data/
+.test_tmp/
+.pip_tmp/
+*.restore.tmp
+
+# --- Секреты ---
+.env
+.env.*
+!.env.example
+
+# --- ОС и редакторы ---
+Thumbs.db
+.DS_Store
+desktop.ini
+*.swp
+.idea/
+.vscode/

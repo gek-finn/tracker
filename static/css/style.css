@@ -1,0 +1,1065 @@
+/* Task Tracker — этап 1 (MVP). Стилизация интерфейса. */
+
+:root {
+  --bg: #f3f5f9;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(16, 24, 40, .08), 0 1px 2px rgba(16, 24, 40, .04);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* --- Шапка --- */
+
+.site-header {
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 16px;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.site-nav > a:not(.btn) {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.site-nav > a:not(.btn):hover { color: var(--text); }
+.site-nav > a:not(.btn).active { color: var(--primary); }
+
+/* --- Основная область --- */
+
+.main-content {
+  flex: 1;
+  padding-top: 28px;
+  padding-bottom: 40px;
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+h1 { font-size: 24px; margin: 0; }
+
+.count-badge {
+  display: inline-block;
+  min-width: 28px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.hint { color: var(--muted); font-size: 13px; }
+
+/* --- Карточки --- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+/* --- Таблица задач --- */
+
+.table-scroll { overflow-x: auto; }
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.tasks-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.tasks-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.tasks-table tbody tr:last-child td { border-bottom: none; }
+.tasks-table tbody tr:hover { background: #f8fafc; }
+
+.title-cell { min-width: 240px; }
+
+.task-title { font-weight: 600; }
+.task-title.done { text-decoration: line-through; color: var(--muted); }
+
+.task-desc {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 13px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.nowrap { white-space: nowrap; }
+
+.actions-col { white-space: nowrap; text-align: right; }
+.actions-col .inline { display: inline-block; margin-left: 6px; }
+
+/* --- Значки (приоритет, статус) --- */
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.priority-high   { background: #fee2e2; color: #b91c1c; }
+.priority-medium { background: #fef3c7; color: #b45309; }
+.priority-low    { background: #d1fae5; color: #047857; }
+
+.status-new     { background: #e2e8f0; color: #475569; }
+.status-progress{ background: #dbeafe; color: #1d4ed8; }
+.status-done    { background: #d1fae5; color: #047857; }
+
+/* --- Кнопки --- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover { background: var(--danger-hover); }
+
+.btn-light {
+  background: #fff;
+  color: var(--text);
+  border-color: var(--border);
+}
+.btn-light:hover { background: #f8fafc; }
+
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+
+/* --- Форма задачи --- */
+
+.form-wrap { max-width: 760px; margin: 0 auto; }
+
+.form-card { padding: 24px; margin-top: 18px; }
+
+.form-row { margin-bottom: 16px; }
+
+.form-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.required { color: var(--danger); }
+
+.form-row input[type="text"],
+.form-row input[type="date"],
+.form-row select,
+.form-row textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+.form-row textarea { resize: vertical; }
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+/* --- Уведомления (flash) --- */
+
+.flash-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.flash {
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity .4s ease;
+}
+
+.flash-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+.flash-error   { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+.flash-hide { opacity: 0; pointer-events: none; }
+
+/* --- Предупреждение об ошибках формы --- */
+
+.alert {
+  margin-top: 18px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.alert-error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+.alert-error ul { margin: 6px 0 0; padding-left: 20px; }
+
+/* --- Пустое состояние --- */
+
+.empty-state {
+  padding: 56px 24px;
+  text-align: center;
+}
+
+.empty-icon { font-size: 40px; margin-bottom: 8px; }
+.empty-state h2 { margin: 0 0 6px; font-size: 20px; }
+.empty-state p { margin: 0 0 20px; color: var(--muted); }
+.empty-state .btn { margin: 0 auto; }
+
+/* --- Модальное окно подтверждения --- */
+
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, .45);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.open { display: flex; }
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(16, 24, 40, .2);
+}
+
+.modal h3 { margin: 0 0 8px; font-size: 18px; }
+.modal p { margin: 0 0 20px; color: var(--muted); }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* --- Подвал --- */
+
+.site-footer {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 20px 0 28px;
+}
+
+/* --- Этап 2: панель поиска и фильтров --- */
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+
+.filter-bar .filter-search {
+  flex: 1 1 230px;
+  min-width: 200px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.filter-bar select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+  max-width: 190px;
+}
+
+.filter-bar .filter-search:focus,
+.filter-bar select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.filter-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-check input { cursor: pointer; }
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* --- Этап 2: просроченные задачи --- */
+
+.tasks-table tbody tr.row-overdue { background: #fef2f2; }
+.tasks-table tbody tr.row-overdue:hover { background: #fde8e8; }
+.tasks-table tbody tr.row-overdue td:first-child { box-shadow: inset 3px 0 0 var(--danger); }
+
+.due-overdue { color: #b91c1c; font-weight: 600; }
+
+.badge-overdue { background: #fee2e2; color: #b91c1c; }
+
+/* --- Этап 2: дашборд --- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.stat-card { padding: 18px; }
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.stat-card.is-primary .stat-value { color: var(--primary); }
+.stat-card.is-success .stat-value { color: #047857; }
+.stat-card.is-danger .stat-value { color: var(--danger); }
+
+.stat-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--danger);
+  text-decoration: none;
+}
+
+.stat-link:hover { text-decoration: underline; }
+
+.dash-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.panel { padding: 22px; }
+
+.panel h2 { margin: 0 0 16px; font-size: 16px; }
+
+.donut-wrap {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.donut {
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.donut-center {
+  position: absolute;
+  inset: 22%;
+  background: var(--card);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.donut-center b { font-size: 26px; line-height: 1.1; }
+.donut-center span { font-size: 12px; color: var(--muted); }
+
+.legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.legend .dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  margin-right: 8px;
+  vertical-align: -1px;
+}
+
+.legend-muted { color: var(--muted); }
+
+.progress {
+  height: 14px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #059669;
+  border-radius: 999px;
+}
+
+.progress-note { margin: 10px 0 0; color: var(--muted); font-size: 14px; }
+
+/* --- Этап 3: канбан-доска --- */
+
+.kanban-board {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;           /* горизонтальная прокрутка на узких экранах */
+  padding-bottom: 10px;
+  align-items: flex-start;
+}
+
+.kanban-column {
+  flex: 1 1 0;
+  min-width: 272px;
+  background: #eef1f6;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+
+.kanban-column-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.kanban-column-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.kanban-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.kanban-count {
+  min-width: 26px;
+  text-align: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.kanban-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 64px;
+  padding: 4px;
+  border-radius: 10px;
+  transition: background .15s ease;
+}
+
+.kanban-cards.drop-hover {
+  background: rgba(37, 99, 235, .08);
+  outline: 2px dashed var(--primary);
+  outline-offset: -2px;
+}
+
+.kanban-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: var(--shadow);
+  cursor: grab;
+}
+
+.kanban-card.dragging {
+  opacity: .55;
+  transform: rotate(1.5deg);
+  cursor: grabbing;
+}
+
+.kanban-card.card-overdue {
+  border-color: #fca5a5;
+  box-shadow: inset 3px 0 0 var(--danger), var(--shadow);
+}
+
+.kanban-card.card-done { opacity: .78; }
+.kanban-card.card-done .kanban-card-title {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.kanban-card-title { font-weight: 600; font-size: 14px; }
+
+.kanban-card-desc {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.kanban-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.kanban-sep { opacity: .6; }
+
+.kanban-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.kanban-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.kanban-status-select {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.kanban-status-select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.kanban-empty {
+  margin: 10px 0 4px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Скрытие служебных элементов (бейдж «Просрочена», заглушка колонок).
+   Класс вместо inline-style: Jinja экранирует кавычки в атрибутах,
+   из-за чего style="display: none" ломался и скрытые элементы показывались. */
+.is-hidden { display: none !important; }
+
+/* --- Этап 4: планирование (день и неделя) --- */
+
+.mode-switch { display: inline-flex; gap: 8px; }
+
+.filter-date {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+}
+
+.filter-date:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.plan-stats .stat-card { padding: 12px 14px; }
+.plan-stats .stat-value { font-size: 22px; }
+
+.plan-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 16px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.plan-nav-title { flex: 1; text-align: center; min-width: 160px; }
+.plan-nav-title h2 { margin: 0; font-size: 16px; }
+.plan-nav-actions { display: flex; gap: 8px; }
+
+/* Неделя: 7 колонок с горизонтальной прокруткой на узких экранах */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  align-items: start;
+}
+
+.week-day {
+  background: #eef1f6;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 150px;
+}
+
+.week-day.is-today {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, .18);
+}
+
+.week-day.is-today .week-day-name,
+.week-day.is-today .week-day-date { color: var(--primary); }
+
+.week-day.is-weekend .week-day-name { color: #b45309; }
+
+.week-day-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  min-height: 38px;
+}
+
+.week-day-name { font-size: 11px; font-weight: 600; color: var(--muted); }
+.week-day-date { font-size: 13px; font-weight: 700; }
+
+/* Вертикальная прокрутка внутри дня при большом числе задач */
+.week-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  overflow-y: auto;
+  min-height: 36px;
+  padding-right: 2px;
+}
+
+.week-empty { text-align: center; color: var(--muted); font-size: 12px; margin: 8px 0; }
+
+/* Карточка задачи в планировании */
+.plan-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 11px;
+  box-shadow: var(--shadow);
+}
+
+.plan-card.card-overdue {
+  border-color: #fca5a5;
+  box-shadow: inset 3px 0 0 var(--danger), var(--shadow);
+}
+
+.plan-card-title { font-size: 13px; font-weight: 600; }
+.plan-card-title.done { text-decoration: line-through; color: var(--muted); }
+
+.plan-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.plan-card-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+  font-size: 12px;
+}
+
+.plan-card-due { color: var(--muted); }
+
+.plan-card-edit {
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 12px;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.plan-card-edit:hover { text-decoration: underline; }
+
+/* Режим «День» */
+.day-list { padding: 16px; }
+
+.day-list-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.day-list-head h2 { margin: 0; font-size: 16px; }
+
+.day-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+/* Блок задач без срока */
+.no-due-block { padding: 16px; margin-top: 14px; }
+
+.no-due-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.no-due-head h2 { margin: 0; font-size: 16px; }
+
+.no-due-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+/* --- Модальное окно «Просмотр задачи» --- */
+
+.plan-card-links { display: flex; align-items: center; gap: 12px; margin-top: 7px; }
+
+.plan-card-link {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--primary);
+  cursor: pointer;
+}
+
+.plan-card-link:hover { text-decoration: underline; }
+
+.task-view-modal {
+  max-width: 560px;
+  width: 100%;
+  max-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.task-view-modal h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.task-view-body { overflow-y: auto; }
+
+.task-view-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px 16px;
+  margin-bottom: 14px;
+}
+
+.tv-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.tv-value { font-size: 14px; font-weight: 500; }
+
+.tv-desc-label { margin-top: 4px; }
+
+.task-view-desc {
+  white-space: pre-wrap;       /* сохраняем переносы строк описания */
+  overflow-wrap: anywhere;     /* длинные слова не ломают окно */
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
+  color: var(--text);
+  margin: 4px 0 16px;
+}
+
+.task-view-desc.empty { color: var(--muted); }
+
+/* --- Этап 5: повторяющиеся задачи --- */
+
+.badge-recurrence {
+  background: #ede9fe;
+  color: #6d28d9;
+  font-weight: 600;
+}
+
+.task-recurrence-line { margin-top: 4px; }
+
+.recurrence-block .form-grid { margin-top: 10px; }
+
+.recurrences-table td { vertical-align: top; }
+
+/* --- Этап 6.1: отчёты и аналитика --- */
+
+.period-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
+
+.period-bar > label { font-size: 14px; color: var(--muted); }
+
+.period-bar select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: #fff;
+}
+
+.period-bar select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+}
+
+.period-dates {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.period-dates label { font-size: 14px; color: var(--muted); }
+
+.period-hint { margin: 0 0 18px; }
+
+.report-panel { margin-top: 14px; }
+
+.report-panel h2 .hint { font-weight: 400; }
+
+.report-table td { vertical-align: middle; }
+
+.report-name a {
+  color: var(--text);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.report-name a:hover { color: var(--primary); text-decoration: underline; }
+
+.report-progress-head { min-width: 150px; }
+
+.report-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 150px;
+}
+
+.progress.progress-sm { height: 8px; flex: 1; min-width: 80px; }
+
+.report-percent { font-size: 13px; font-weight: 600; white-space: nowrap; }
+
+/* --- Этап 6.2: экспорт Excel --- */
+
+.page-head-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* --- Адаптивность --- */
+
+@media (max-width: 900px) {
+  .dash-row { grid-template-columns: 1fr; }
+  .plan-nav { flex-direction: column; }
+  .plan-nav-actions { width: 100%; }
+  .plan-nav-actions .btn { flex: 1; }
+}
+
+@media (max-width: 640px) {
+  .page-head h1 { font-size: 20px; }
+  .form-card { padding: 18px; }
+  .actions-col { text-align: left; }
+  .filter-actions { margin-left: 0; width: 100%; }
+}

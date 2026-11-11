@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Канбан — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Канбан-доска</h1>
+  <a class="btn btn-primary" href="{{ url_for('task_new') }}">+ Новая задача</a>
+</div>
+<p class="hint">Перетащите карточку мышью в другую колонку или смените статус списком на карточке. Изменения сохраняются автоматически.</p>
+
+<div class="kanban-board" id="kanban-board" data-today="{{ today }}">
+  {% for column in columns %}
+  <section class="kanban-column" data-status="{{ column.status }}">
+    <header class="kanban-column-head">
+      <span class="kanban-column-title">
+        <span class="kanban-dot" style="background: {{ STATUS_COLORS[column.status] }}"></span>
+        {{ column.title }}
+      </span>
+      <span class="kanban-count">{{ column.tasks|length }}</span>
+    </header>
+
+    <div class="kanban-cards" data-status="{{ column.status }}">
+      {% for task in column.tasks %}
+      <article class="kanban-card{{ ' card-done' if task['status'] == 'Завершена' }}{{ ' card-overdue' if task.is_overdue }}"
+               draggable="true"
+               data-task-id="{{ task['id'] }}"
+               data-status="{{ task['status'] }}"
+               data-due="{{ task['due_date'] or '' }}">
+        <div class="kanban-card-title">{{ task['title'] }}</div>
+        {% if task['description'] %}
+        <div class="kanban-card-desc">{{ task['description'] }}</div>
+        {% endif %}
+
+        <div class="kanban-card-meta">
+          <span title="Исполнитель">{{ task['assignee'] or '—' }}</span>
+          <span class="kanban-sep">·</span>
+          <span title="Проект">{{ task['project'] or '—' }}</span>
+        </div>
+
+        <div class="kanban-card-tags">
+          <span class="badge {{ PRIORITY_CLASS.get(task['priority'], '') }}">{{ task['priority'] }}</span>
+          <span class="kanban-due{{ ' due-overdue' if task.is_overdue }}">{{ task['due_date'] | ru_date }}</span>
+          <span class="badge badge-overdue kanban-overdue{{ ' is-hidden' if not task.is_overdue }}">Просрочена</span>
+          {% if task['recurrence_id'] and recurrences.get(task['recurrence_id']) %}
+          <span class="badge badge-recurrence" title="Следующий экземпляр: {{ recurrences[task['recurrence_id']].next }}">↻</span>
+          {% endif %}
+        </div>
+
+        <div class="kanban-card-actions">
+          <select class="kanban-status-select" aria-label="Изменить статус">
+            {% for value in STATUSES %}
+            <option value="{{ value }}"{{ ' selected' if task['status'] == value }}>{{ value }}</option>
+            {% endfor %}
+          </select>
+          <button type="button" class="btn btn-light btn-sm js-task-view" data-task-id="{{ task['id'] }}">Просмотр</button>
+          <a class="btn btn-light btn-sm" href="{{ url_for('task_edit', task_id=task['id']) }}">Редактировать</a>
+        </div>
+      </article>
+      {% endfor %}
+      <p class="kanban-empty{{ ' is-hidden' if column.tasks }}">Нет задач</p>
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/kanban.js') }}?v={{ static_version('js/kanban.js') }}"></script>
+{% endblock %}

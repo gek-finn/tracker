@@ -1,0 +1,21 @@
+<article class="plan-card{{ ' card-overdue' if task.is_overdue }}" data-task-id="{{ task['id'] }}">
+  <div class="plan-card-title{{ ' done' if task['status'] == DONE_STATUS }}">{{ task['title'] }}</div>
+  <div class="plan-card-meta">
+    <span>{{ task['assignee'] or '—' }}</span>
+    <span class="kanban-sep">·</span>
+    <span>{{ task['project'] or '—' }}</span>
+  </div>
+  <div class="plan-card-tags">
+    <span class="badge {{ PRIORITY_CLASS.get(task['priority'], '') }}">{{ task['priority'] }}</span>
+    <span class="badge {{ STATUS_CLASS.get(task['status'], '') }}">{{ task['status'] }}</span>
+    <span class="plan-card-due">{{ task['due_date'] | ru_date }}</span>
+    {% if task.is_overdue %}<span class="badge badge-overdue">Просрочена</span>{% endif %}
+    {% if task['recurrence_id'] and recurrences.get(task['recurrence_id']) %}
+    <span class="badge badge-recurrence" title="Повторяется: {{ recurrences[task['recurrence_id']].text }}. Следующий экземпляр: {{ recurrences[task['recurrence_id']].next }}">↻</span>
+    {% endif %}
+  </div>
+  <div class="plan-card-links">
+    <button type="button" class="plan-card-link js-task-view" data-task-id="{{ task['id'] }}">Просмотр</button>
+    <a class="plan-card-edit" href="{{ url_for('task_edit', task_id=task['id']) }}">Редактировать →</a>
+  </div>
+</article>

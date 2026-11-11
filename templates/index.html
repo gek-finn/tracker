@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Задачи — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Задачи {% if tasks or filters_active %}<span class="count-badge">{{ tasks|length }}</span>{% endif %}</h1>
+  <a class="btn btn-primary" href="{{ url_for('task_new') }}">+ Новая задача</a>
+</div>
+
+{% if has_any %}
+<form class="card filter-bar" method="get" action="{{ url_for('index') }}">
+  <input class="filter-search" type="search" name="q" value="{{ filters.q }}"
+         placeholder="Поиск по названию и описанию…" aria-label="Поиск">
+
+  <select name="status" aria-label="Фильтр по статусу">
+    <option value="">Любой статус</option>
+    {% for value in STATUSES %}
+    <option value="{{ value }}"{{ ' selected' if filters.status == value }}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="priority" aria-label="Фильтр по приоритету">
+    <option value="">Любой приоритет</option>
+    {% for value in PRIORITIES %}
+    <option value="{{ value }}"{{ ' selected' if filters.priority == value }}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="assignee" aria-label="Фильтр по исполнителю">
+    <option value="">Все исполнители</option>
+    {% for value in assignees %}
+    <option value="{{ value }}"{{ ' selected' if filters.assignee == value }}>{{ value }}</option>
+    {% endfor %}
+    <option value="__none__"{{ ' selected' if filters.assignee == '__none__' }}>Без исполнителя</option>
+  </select>
+
+  <select name="project" aria-label="Фильтр по проекту">
+    <option value="">Все проекты</option>
+    {% for value in projects %}
+    <option value="{{ value }}"{{ ' selected' if filters.project == value }}>{{ value }}</option>
+    {% endfor %}
+    <option value="__none__"{{ ' selected' if filters.project == '__none__' }}>Без проекта</option>
+  </select>
+
+  <label class="filter-check">
+    <input type="checkbox" name="overdue"{{ ' checked' if filters.overdue }}>
+    Только просроченные
+  </label>
+
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary btn-sm">Применить</button>
+    <a class="btn btn-light btn-sm" href="{{ url_for('index') }}">Сбросить</a>
+    <a class="btn btn-light btn-sm" href="{{ url_for('export_csv', **request.args.to_dict()) }}">Экспорт CSV</a>
+    <a class="btn btn-light btn-sm" href="{{ url_for('export_xlsx', **request.args.to_dict()) }}">Экспорт Excel</a>
+  </div>
+</form>
+{% endif %}
+
+{% if tasks %}
+<div class="card table-scroll">
+  <table class="tasks-table">
+    <thead>
+      <tr>
+        <th>Название</th>
+        <th>Исполнитель</th>
+        <th>Проект</th>
+        <th>Приоритет</th>
+        <th>Статус</th>
+        <th>Срок</th>
+        <th class="actions-col">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for task in tasks %}
+      <tr class="{{ 'row-overdue' if task.is_overdue }}">
+        <td class="title-cell">
+          <div class="task-title {{ 'done' if task['status'] == 'Завершена' }}">{{ task['title'] }}</div>
+          {% if task['description'] %}<div class="task-desc">{{ task['description'] }}</div>{% endif %}
+          {% if task['recurrence_id'] and recurrences.get(task['recurrence_id']) %}
+          <div class="task-recurrence-line">
+            <span class="badge badge-recurrence" title="Следующий экземпляр: {{ recurrences[task['recurrence_id']].next }}">↻ {{ recurrences[task['recurrence_id']].text }}</span>
+          </div>
+          {% endif %}
+        </td>
+        <td>{{ task['assignee'] or '—' }}</td>
+        <td>{{ task['project'] or '—' }}</td>
+        <td><span class="badge {{ PRIORITY_CLASS.get(task['priority'], '') }}">{{ task['priority'] }}</span></td>
+        <td><span class="badge {{ STATUS_CLASS.get(task['status'], '') }}">{{ task['status'] }}</span></td>
+        <td class="nowrap">
+          {% if task.is_overdue %}
+          <span class="due-overdue">{{ task['due_date'] | ru_date }}</span>
+          <span class="badge badge-overdue">Просрочена</span>
+          {% else %}
+          {{ task['due_date'] | ru_date }}
+          {% endif %}
+        </td>
+        <td class="actions-col">
+          <button type="button" class="btn btn-light btn-sm js-task-view" data-task-id="{{ task['id'] }}">Просмотр</button>
+          <a class="btn btn-light btn-sm" href="{{ url_for('task_edit', task_id=task['id']) }}">Изменить</a>
+          <form class="js-delete-form inline" method="post"
+                action="{{ url_for('task_delete', task_id=task['id']) }}"
+                data-task-title="{{ task['title'] }}">
+            <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+<p class="hint">
+  {% if filters_active %}
+  Найдено {{ tasks|length }} из {{ total_count }} задач.
+  {% else %}
+  Сортировка: сначала задачи с ближайшим сроком.
+  {% endif %}
+  Просроченные задачи выделены красным.
+</p>
+{% elif has_any %}
+<div class="card empty-state">
+  <div class="empty-icon">🔍</div>
+  <h2>Ничего не найдено</h2>
+  <p>Под текущие условия не подошла ни одна задача. Измените условия или сбросьте фильтры.</p>
+  <a class="btn btn-light" href="{{ url_for('index') }}">Сбросить фильтры</a>
+</div>
+{% else %}
+<div class="card empty-state">
+  <div class="empty-icon">🗒️</div>
+  <h2>Задач пока нет</h2>
+  <p>Создайте первую задачу: укажите название, исполнителя, проект, приоритет и срок.</p>
+  <a class="btn btn-primary" href="{{ url_for('task_new') }}">+ Новая задача</a>
+</div>
+{% endif %}
+{% endblock %}

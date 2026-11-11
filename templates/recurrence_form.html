@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Расписание — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="form-wrap">
+  <h1>Расписание повторения</h1>
+
+  {% if errors %}
+  <div class="alert alert-error">
+    <strong>Проверьте введённые данные:</strong>
+    <ul>{% for error in errors %}<li>{{ error }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <form method="post" class="card form-card js-task-form">
+    <input type="hidden" name="form_token" value="{{ form_token }}">
+
+    <div class="form-row">
+      <label for="title">Название <span class="required">*</span></label>
+      <input type="text" id="title" name="title" value="{{ rec.title }}" maxlength="200" required>
+      <span class="hint">Используется для будущих экземпляров</span>
+    </div>
+
+    <div class="form-row">
+      <label for="description">Описание</label>
+      <textarea id="description" name="description" rows="3">{{ rec.description }}</textarea>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="assignee">Исполнитель</label>
+        <input type="text" id="assignee" name="assignee" value="{{ rec.assignee }}" maxlength="100">
+      </div>
+      <div class="form-row">
+        <label for="project">Проект</label>
+        <input type="text" id="project" name="project" value="{{ rec.project }}" maxlength="100">
+      </div>
+      <div class="form-row">
+        <label for="priority">Приоритет</label>
+        <select id="priority" name="priority">
+          {% for value in PRIORITIES %}
+          <option value="{{ value }}"{{ ' selected' if rec.priority == value }}>{{ value }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>Текущее правило</label>
+      <p class="hint">↻ {{ rule_text }} · начало {{ rec.start_date | ru_date }}{% if rec.last_generated %} · последний экземпляр {{ rec.last_generated | ru_date }}{% endif %}</p>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-row">
+        <label for="frequency">Повторение</label>
+        <select id="frequency" name="frequency" class="js-recurrence-frequency" data-in-form="rec">
+          {% for value, label in FREQUENCY_CHOICES %}
+          {% if value != 'none' %}
+          <option value="{{ value }}"{{ ' selected' if rec.frequency == value }}>{{ label }}</option>
+          {% endif %}
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-row js-recurrence-weekday{{ ' is-hidden' if rec.frequency != 'weekly' }}">
+        <label for="weekday">День недели</label>
+        <select id="weekday" name="weekday">
+          {% for name in WEEKDAY_NAMES %}
+          <option value="{{ loop.index0 }}"{{ ' selected' if rec.weekday|string == loop.index0|string }}>{{ name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-row js-recurrence-monthday{{ ' is-hidden' if rec.frequency != 'monthly' }}">
+        <label for="month_day">Число месяца</label>
+        <input type="number" id="month_day" name="month_day" min="1" max="31" value="{{ rec.month_day }}">
+      </div>
+
+      <div class="form-row js-recurrence-end">
+        <label for="end_date">Дата окончания</label>
+        <input type="date" id="end_date" name="end_date" value="{{ rec.end_date or '' }}">
+        <span class="hint">Пусто — без даты окончания</span>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Сохранить расписание</button>
+      <a class="btn btn-light" href="{{ url_for('recurrences_list') }}">Отмена</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

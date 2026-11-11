@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Планирование — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Планирование</h1>
+  <div class="mode-switch">
+    <a class="btn btn-sm {{ 'btn-primary' if mode == 'day' else 'btn-light' }}"
+       href="{{ urls.switch_day }}">День</a>
+    <a class="btn btn-sm {{ 'btn-primary' if mode == 'week' else 'btn-light' }}"
+       href="{{ urls.switch_week }}">Неделя</a>
+  </div>
+</div>
+
+<form class="card filter-bar" method="get" action="{{ url_for('plan') }}">
+  <input type="hidden" name="mode" value="{{ mode }}">
+  {% if mode == 'day' %}
+  <input class="filter-date" type="date" name="date" value="{{ base_iso }}" aria-label="Дата">
+  {% else %}
+  <input type="hidden" name="date" value="{{ base_iso }}">
+  {% endif %}
+
+  <select name="assignee" aria-label="Фильтр по исполнителю">
+    <option value="">Все исполнители</option>
+    {% for value in assignees %}
+    <option value="{{ value }}"{{ ' selected' if filters.assignee == value }}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="project" aria-label="Фильтр по проекту">
+    <option value="">Все проекты</option>
+    {% for value in projects %}
+    <option value="{{ value }}"{{ ' selected' if filters.project == value }}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <select name="status" aria-label="Фильтр по статусу">
+    <option value="">Любой статус</option>
+    {% for value in STATUSES %}
+    <option value="{{ value }}"{{ ' selected' if filters.status == value }}>{{ value }}</option>
+    {% endfor %}
+  </select>
+
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary btn-sm">Применить</button>
+    <a class="btn btn-light btn-sm" href="{{ urls.reset }}">Сбросить</a>
+  </div>
+</form>
+
+<div class="stats-grid plan-stats">
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.total }}</div>
+    <div class="stat-label">Всего в периоде</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.new }}</div>
+    <div class="stat-label">Новые</div>
+  </div>
+  <div class="card stat-card is-primary">
+    <div class="stat-value">{{ stats.progress }}</div>
+    <div class="stat-label">В работе</div>
+  </div>
+  <div class="card stat-card is-success">
+    <div class="stat-value">{{ stats.done }}</div>
+    <div class="stat-label">Завершённые</div>
+  </div>
+  <div class="card stat-card is-danger">
+    <div class="stat-value">{{ stats.overdue }}</div>
+    <div class="stat-label">Просроченные</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ stats.no_due }}</div>
+    <div class="stat-label">Без срока</div>
+  </div>
+</div>
+
+<div class="card plan-nav">
+  <a class="btn btn-light btn-sm" href="{{ urls.prev }}">{{ labels.prev }}</a>
+  <div class="plan-nav-title">
+    <h2>{{ period_title }}</h2>
+    {% if period_hint %}<span class="hint">{{ period_hint }}</span>{% endif %}
+  </div>
+  <div class="plan-nav-actions">
+    <a class="btn btn-light btn-sm" href="{{ urls.today }}">{{ labels.today }}</a>
+    <a class="btn btn-light btn-sm" href="{{ urls.next }}">{{ labels.next }}</a>
+  </div>
+</div>
+
+{% if mode == 'week' %}
+<div class="week-grid">
+  {% for day in days %}
+  <section class="week-day{{ ' is-today' if day.is_today }}{{ ' is-weekend' if day.is_weekend }}"
+           data-date="{{ day.iso }}">
+    <header class="week-day-head">
+      <div>
+        <div class="week-day-name">{{ day.name }}</div>
+        <div class="week-day-date">{{ day.display }}</div>
+      </div>
+      <span class="kanban-count">{{ day.tasks|length }}</span>
+    </header>
+    <div class="week-cards">
+      {% for task in day.tasks %}{% include '_task_card.html' %}{% endfor %}
+      {% if not day.tasks %}<p class="week-empty">—</p>{% endif %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% else %}
+<section class="card day-list">
+  <header class="day-list-head">
+    <h2>{{ day_heading }}</h2>
+    <span class="kanban-count">{{ day_tasks|length }}</span>
+  </header>
+  <div class="day-cards">
+    {% for task in day_tasks %}{% include '_task_card.html' %}{% endfor %}
+    {% if not day_tasks %}
+    <p class="week-empty">На эту дату задач нет{% if filters_active %} — попробуйте изменить фильтры{% endif %}.</p>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<section class="card no-due-block">
+  <header class="no-due-head">
+    <h2>Задачи без срока</h2>
+    <span class="kanban-count">{{ no_due_tasks|length }}</span>
+  </header>
+  {% if no_due_tasks %}
+  <div class="no-due-cards">
+    {% for task in no_due_tasks %}{% include '_task_card.html' %}{% endfor %}
+  </div>
+  {% else %}
+  <p class="week-empty">Задач без срока нет.</p>
+  {% endif %}
+</section>
+{% endblock %}

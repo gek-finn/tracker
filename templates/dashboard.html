@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Дашборд — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <h1>Дашборд <span class="count-badge">{{ period_title }}</span></h1>
+  <div class="page-head-actions">
+    <a class="btn btn-light" href="{{ export_csv_url }}">Экспорт CSV</a>
+    <a class="btn btn-light" href="{{ export_xlsx_url }}">Экспорт Excel</a>
+  </div>
+</div>
+
+<form class="card period-bar" method="get" action="{{ url_for('dashboard') }}">
+  <label for="period">Период:</label>
+  <select id="period" name="period" class="js-period-select">
+    <option value="all"{{ ' selected' if period == 'all' }}>Все время</option>
+    <option value="7d"{{ ' selected' if period == '7d' }}>Последние 7 дней</option>
+    <option value="30d"{{ ' selected' if period == '30d' }}>Последние 30 дней</option>
+    <option value="custom"{{ ' selected' if period == 'custom' }}>Произвольный период</option>
+  </select>
+  <span class="period-dates js-period-dates{{ '' if period == 'custom' else ' is-hidden' }}">
+    <label for="period-from">с</label>
+    <input class="filter-date" type="date" id="period-from" name="date_from" value="{{ period_from }}">
+    <label for="period-to">по</label>
+    <input class="filter-date" type="date" id="period-to" name="date_to" value="{{ period_to }}">
+  </span>
+  <div class="filter-actions">
+    <button type="submit" class="btn btn-primary btn-sm">Применить</button>
+    {% if period != 'all' %}
+    <a class="btn btn-light btn-sm" href="{{ url_for('dashboard') }}">Сбросить</a>
+    {% endif %}
+  </div>
+</form>
+<p class="hint period-hint">
+  Задачи попадают в период по <b>сроку выполнения</b> — дате, на которую задача запланирована.
+  Отдельной даты завершения в базе нет. Задачи без срока учитываются только за всё время.
+</p>
+{% if period_error %}
+<div class="alert alert-error">{{ period_error }} Показаны данные за всё время.</div>
+{% endif %}
+
+<div class="stats-grid">
+  <div class="card stat-card">
+    <div class="stat-value">{{ total }}</div>
+    <div class="stat-label">Всего задач</div>
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ counts['Новая'] }}</div>
+    <div class="stat-label">Новые</div>
+  </div>
+  <div class="card stat-card is-primary">
+    <div class="stat-value">{{ counts['В работе'] }}</div>
+    <div class="stat-label">В работе</div>
+  </div>
+  <div class="card stat-card is-success">
+    <div class="stat-value">{{ counts['Завершена'] }}</div>
+    <div class="stat-label">Завершённые</div>
+  </div>
+  <div class="card stat-card is-danger">
+    <div class="stat-value">{{ overdue }}</div>
+    <div class="stat-label">Просроченные</div>
+    {% if overdue %}
+    <a class="stat-link" href="{{ url_for('index', overdue='on') }}">Показать задачи →</a>
+    {% endif %}
+  </div>
+  <div class="card stat-card">
+    <div class="stat-value">{{ done_percent }}%</div>
+    <div class="stat-label">Процент завершённых</div>
+  </div>
+</div>
+
+<div class="dash-row">
+  <div class="card panel">
+    <h2>Распределение по статусам</h2>
+    <div class="donut-wrap">
+      <div class="donut" style="background: {{ donut_css }};">
+        <div class="donut-center"><b>{{ total }}</b><span>задач</span></div>
+      </div>
+      <ul class="legend">
+        {% for status in STATUSES %}
+        <li>
+          <span class="dot" style="background: {{ STATUS_COLORS[status] }}"></span>
+          {{ status }} — <b>{{ counts[status] }}</b>
+          <span class="legend-muted">({{ ((counts[status] * 100 / total) | round(0) | int) if total else 0 }}%)</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="card panel">
+    <h2>Прогресс выполнения</h2>
+    <div class="progress" role="progressbar" aria-valuenow="{{ done_percent }}" aria-valuemin="0" aria-valuemax="100">
+      <div class="progress-fill" style="width: {{ done_percent }}%"></div>
+    </div>
+    <p class="progress-note">Завершено {{ done_percent }}% задач — {{ done }} из {{ total }}.</p>
+    <p class="hint">Показатели рассчитываются по задачам выбранного периода.</p>
+  </div>
+</div>
+
+<div class="card panel report-panel">
+  <h2>По исполнителям <span class="hint">{{ period_title }}</span></h2>
+  {% if assignee_rows %}
+  <div class="table-scroll">
+    <table class="tasks-table report-table">
+      <thead>
+        <tr>
+          <th>Исполнитель</th>
+          <th>Всего</th>
+          <th>Завершено</th>
+          <th>Незавершено</th>
+          <th>Просрочено</th>
+          <th class="report-progress-head">Выполнение</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in assignee_rows %}
+        <tr>
+          <td class="report-name"><a href="{{ row.url }}">{{ row.name or 'Без исполнителя' }}</a></td>
+          <td>{{ row.total }}</td>
+          <td>{{ row.done }}</td>
+          <td>{{ row.undone }}</td>
+          <td>{{ row.overdue }}</td>
+          <td>
+            <div class="report-progress-cell">
+              <div class="progress progress-sm"><div class="progress-fill" style="width: {{ row.percent }}%"></div></div>
+              <span class="report-percent">{{ row.percent }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">Нажмите на исполнителя, чтобы открыть список его задач (ссылка учитывает фильтр «Без исполнителя»).</p>
+  {% else %}
+  <p class="hint">Нет задач с указанным сроком в выбранном периоде.</p>
+  {% endif %}
+</div>
+
+<div class="card panel report-panel">
+  <h2>По проектам <span class="hint">{{ period_title }}</span></h2>
+  {% if project_rows %}
+  <div class="table-scroll">
+    <table class="tasks-table report-table">
+      <thead>
+        <tr>
+          <th>Проект</th>
+          <th>Всего</th>
+          <th>Завершено</th>
+          <th>В работе</th>
+          <th>Просрочено</th>
+          <th class="report-progress-head">Выполнение</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in project_rows %}
+        <tr>
+          <td class="report-name"><a href="{{ row.url }}">{{ row.name or 'Без проекта' }}</a></td>
+          <td>{{ row.total }}</td>
+          <td>{{ row.done }}</td>
+          <td>{{ row.in_progress }}</td>
+          <td>{{ row.overdue }}</td>
+          <td>
+            <div class="report-progress-cell">
+              <div class="progress progress-sm"><div class="progress-fill" style="width: {{ row.percent }}%"></div></div>
+              <span class="report-percent">{{ row.percent }}%</span>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="hint">Нажмите на проект, чтобы открыть список его задач.</p>
+  {% else %}
+  <p class="hint">Нет задач с указанным сроком в выбранном периоде.</p>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Показ полей дат при выборе «Произвольный период»
+  document.addEventListener("DOMContentLoaded", function () {
+    var select = document.querySelector(".js-period-select");
+    if (!select) return;
+    var dates = document.querySelector(".js-period-dates");
+    function sync() {
+      dates.classList.toggle("is-hidden", select.value !== "custom");
+    }
+    sync();
+    select.addEventListener("change", sync);
+  });
+</script>
+{% endblock %}

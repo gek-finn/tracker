@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Ошибка {{ code }} — Task Tracker{% endblock %}
+
+{% block content %}
+<div class="card empty-state">
+  <div class="empty-icon">🤷</div>
+  <h2>{{ code }}. {{ message }}</h2>
+  <a class="btn btn-primary" href="{{ url_for('index') }}">На главную</a>
+</div>
+{% endblock %}

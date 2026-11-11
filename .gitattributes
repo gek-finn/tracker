@@ -1,0 +1,7 @@
+# Файлы проекта: автоматическая нормализация концов строк в Git.
+# BAT-файлы обязаны оставаться с CRLF (иначе cmd.exe может сбоить).
+* text=auto
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.db binary

@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Task Tracker{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v={{ static_version('css/style.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="{{ url_for('index') }}">
+      <span class="brand-logo">✓</span>
+      <span>Task&nbsp;Tracker</span>
+    </a>
+    <nav class="site-nav">
+      <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">Задачи</a>
+      <a href="{{ url_for('kanban') }}" class="{{ 'active' if request.endpoint == 'kanban' else '' }}">Канбан</a>
+      <a href="{{ url_for('plan') }}" class="{{ 'active' if request.endpoint == 'plan' else '' }}">Планирование</a>
+      <a href="{{ url_for('recurrences_list') }}" class="{{ 'active' if request.endpoint == 'recurrences_list' else '' }}">Повторение</a>
+      <a href="{{ url_for('dashboard') }}" class="{{ 'active' if request.endpoint == 'dashboard' else '' }}">Дашборд</a>
+      <a class="btn btn-primary btn-sm" href="{{ url_for('task_new') }}">+ Новая задача</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container main-content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  Task Tracker — учебный проект.
+</footer>
+
+<!-- Диалог подтверждения удаления -->
+<div class="modal-backdrop" id="confirm-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+    <h3 id="confirm-modal-title">Удаление задачи</h3>
+    <p id="confirm-modal-text"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-light" id="confirm-no">Отмена</button>
+      <button type="button" class="btn btn-danger" id="confirm-yes">Удалить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Модальное окно «Просмотр задачи» -->
+<div class="modal-backdrop" id="task-view-modal" aria-hidden="true">
+  <div class="modal task-view-modal" role="dialog" aria-modal="true" aria-labelledby="tv-title" tabindex="-1">
+    <h3 id="tv-title"></h3>
+    <div class="task-view-body">
+      <div class="task-view-meta">
+        <div class="tv-field">
+          <div class="tv-label">Исполнитель</div>
+          <div class="tv-value" id="tv-assignee"></div>
+        </div>
+        <div class="tv-field">
+          <div class="tv-label">Проект</div>
+          <div class="tv-value" id="tv-project"></div>
+        </div>
+        <div class="tv-field">
+          <div class="tv-label">Приоритет</div>
+          <div class="tv-value"><span class="badge" id="tv-priority"></span></div>
+        </div>
+        <div class="tv-field">
+          <div class="tv-label">Статус</div>
+          <div class="tv-value"><span class="badge" id="tv-status"></span></div>
+        </div>
+      </div>
+      <div class="tv-field">
+        <div class="tv-label">Срок выполнения</div>
+        <div class="tv-value">
+          <span id="tv-due"></span>
+          <span class="badge badge-overdue is-hidden" id="tv-overdue">Просрочена</span>
+        </div>
+      </div>
+      <div class="tv-field">
+        <div class="tv-label">Повторение</div>
+        <div class="tv-value"><span id="tv-recurrence">—</span></div>
+      </div>
+      <div class="tv-label tv-desc-label">Описание</div>
+      <div id="tv-desc" class="task-view-desc"></div>
+    </div>
+    <div class="modal-actions">
+      <a id="tv-edit" class="btn btn-primary" href="#">Редактировать</a>
+      <button type="button" id="tv-close" class="btn btn-light">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}?v={{ static_version('js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/task-view.js') }}?v={{ static_version('js/task-view.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
