@@ -27,16 +27,22 @@ Python · Flask · SQLite · HTML / CSS · JavaScript · openpyxl
 
 ## Интерфейс
 
-![Интерфейс приложения на демонстрационных данных](docs/screenshots/desktop.png)
+### Канбан задач
+
+![Канбан задач на демонстрационных данных](docs/screenshots/desktop.png)
+
+### Дашборд и отчёт
+
+![Дашборд со статистикой задач](docs/screenshots/detail-1.png)
+
+### Планирование
+
+![Планирование задач на неделю](docs/screenshots/detail-2.png)
 
 <details>
-<summary>Мобильный экран и другие разделы</summary>
+<summary>Мобильная версия</summary>
 
-![detail-1](docs/screenshots/detail-1.png)
-
-![detail-2](docs/screenshots/detail-2.png)
-
-![mobile](docs/screenshots/mobile.png)
+![Трекер задач на телефоне](docs/screenshots/mobile.png)
 
 </details>
 
